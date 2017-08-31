@@ -1,0 +1,29 @@
+{
+  "name": "dicom-web-server",
+  "version": "0.1.0",
+  "description": "A set of web services to access dicom information from dcm4chee.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DilvanLab/dicom-web-server.git"
+  },
+  "keywords": [
+    "dicom",
+    "web",
+    "services",
+    "dcm4chee"
+  ],
+  "author": "Dilvan A. Moreira (and others)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/DilvanLab/dicom-web-server/issues"
+  },
+  "homepage": "https://github.com/DilvanLab/dicom-web-server#readme",
+  "dependencies": {
+    "express": "^4.15.4",
+    "mysql": "^2.14.1"
+  }
+}
