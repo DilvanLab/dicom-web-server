@@ -80,6 +80,7 @@ function searchAll(response) {
     const sql = "SELECT series_iuid FROM series";
     con.query(sql, (err, result)=>{
         if (err) throw err;
+        response.writeHead(200, {"Content-Type": "application/json"});
         response.write(JSON.stringify(result));
         /*
         response.write("<p>Series from Study "+ studyId +":</p>");
