@@ -9,8 +9,11 @@ const searchPatients = function (request,response) {
   let sql = "SELECT pat_id FROM patient";
   con.query(sql, function (err, result) {
     if (err) throw err;
-    response.writeHead(200, {"Content-Type": "application/json"});
+    response.setHeader('Access-Control-Allow-Origin', "*");
+   // response.writeHead(200, {"Content-Type": "application/json"});
     response.write(JSON.stringify(result));
+
+    //response.write("TESTE ASDFa sdf, asd f");
     /*
     response.write("<p>Patients:</p>");
     for (var i =0; i<result.length; i++) {  
@@ -25,7 +28,6 @@ const searchStudies = function( request,response, patientId) {
 
   con.query(sql, patientId, function (err, result) {
     if (err) throw err;
-    response.writeHead(200, {"Content-Type": "application/json"});
     response.write(JSON.stringify(result));
     /*
     response.write("<p>Studies from patient "+ patientId +":</p>");
@@ -41,7 +43,6 @@ const searchSeries = function( request,response, studyId) {
   let sql = "SELECT series.series_iuid FROM series JOIN study ON series.study_fk = study.pk WHERE study.study_iuid = ?";
   con.query(sql, studyId, function (err, result) {
     if (err) throw err;
-    response.writeHead(200, {"Content-Type": "application/json"});
     response.write(JSON.stringify(result));
     /*
     response.write("<p>Series from Study "+ studyId +":</p>");
@@ -58,11 +59,12 @@ const searchObjects = function( request,response, serieId) {
   let sql = "SELECT instance.sop_iuid, study.study_iuid FROM instance JOIN series ON instance.series_fk = series.pk JOIN study ON series.study_fk = study.pk WHERE series.series_iuid = ?"
   con.query(sql, serieId, function (err, result) {
     if (err) throw err;
+    //response.writeHead(200, {"Content-Type": "application/json"});
+    response.setHeader('Access-Control-Allow-Origin', "*");
     var wadoUrls = new Array();
     for (var i =0; i < result.length; i++) {  
       wadoUrls.push("/wado?requestType=WADO&studyUID=" + result[i].study_iuid + "&seriesUID="+ serieId + "&objectUID=" + result[i].sop_iuid);
     }
-    response.writeHead(200, {"Content-Type": "application/json"});
     response.write(JSON.stringify(wadoUrls));
     /*
     response.write("<p>Objects from Serie "+ serieId +":</p>");
@@ -74,7 +76,20 @@ const searchObjects = function( request,response, serieId) {
   });
 };
 
-
+const searchAll = function( request,response) {
+  let sql = "SELECT series_iuid FROM series";
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    response.setHeader('Access-Control-Allow-Origin', "*");
+    response.write(JSON.stringify(result));
+    /*
+    response.write("<p>Series from Study "+ studyId +":</p>");
+    for (var i =0; i < result.length; i++) {  
+      response.write("<p><a href=\"/objects?serieId="+ result[i].series_iuid +"\">"+ result[i].series_iuid +"</a></p>");
+    }*/
+    response.end();
+  });
+};
 
 
 /*
@@ -112,8 +127,11 @@ const server = http.createServer(function (request, response) {
   else if (pathname = '/objects' && url.parse(request.url,true).query.serieId) {
     searchObjects(request,response, url.parse(request.url,true).query.serieId);
   }
+  else if (pathname = '/all') {
+    searchAll(request,response);
+  }
 
-  
+
 
 });
 
