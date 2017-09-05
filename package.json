@@ -24,6 +24,7 @@
   "homepage": "https://github.com/DilvanLab/dicom-web-server#readme",
   "dependencies": {
     "express": "^4.15.4",
-    "mysql": "^2.14.1"
+    "mysql": "^2.14.1",
+    "request": "^2.81.0"
   }
 }

@@ -1,8 +1,11 @@
 const express = require('express');
 const con = require('./db');
+const request = require('request');
 
 const port = 3000;
+const wadoServer = 'http://localhost:9080';
 const app = express();
+
 
 function searchPatients(response) {
     const sql = "SELECT pat_id FROM patient";
@@ -94,7 +97,7 @@ function searchAll(response) {
 //
 //   Setting up the paths
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -119,6 +122,17 @@ app.get('/objects', (request, response) => {
 
 app.get('/allSeries', (request, response) => {
     searchAll(response);
+});
+
+//   Wado proxy to fix COORS issues
+//
+app.use('/wado', (req, res) => {
+    const url = wadoServer + '/wado'+ req.url;
+    //console.log(url);
+    const r = (req.method === 'POST') ?
+                  request.post({uri: url, json: req.body}):
+                  request(url);
+    req.pipe(r).pipe(res);
 });
 
 let server = app.listen(port, () => {
