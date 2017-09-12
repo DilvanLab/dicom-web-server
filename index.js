@@ -94,6 +94,31 @@ function searchAll(response) {
     });
 }
 
+
+function searchDicom(serieId, response) {
+    const sql = "SELECT instance.sop_iuid, study.study_iuid FROM instance JOIN series ON instance.series_fk = series.pk JOIN study ON series.study_fk = study.pk WHERE series.series_iuid = ?";
+    con.query(sql, serieId, (err, results)=>{
+        if (err) throw err;
+        let wadoUrls = [];
+        results.forEach(result=>{
+            wadoUrls.push("/wado?requestType=WADO&studyUID=" + result.study_iuid + "&seriesUID=" + serieId + "&objectUID=" + result.sop_iuid + "&contentType=application/dicom");
+        });
+        // for (let i = 0; i < results.length; i++) {
+        //     wadoUrls.push("/wado?requestType=WADO&studyUID=" + results[i].study_iuid + "&seriesUID=" + serieId + "&objectUID=" + results[i].sop_iuid);
+        // }
+        response.writeHead(200, {"Content-Type": "application/json"});
+        response.write(JSON.stringify(wadoUrls));
+        /*
+        response.write("<p>Objects from Serie "+ serieId +":</p>");
+        for (var i =0; i < result.length; i++) {
+          response.write("<img src=\"http://localhost:8080/wado?requestType=WADO&studyUID="+ result[i].study_iuid +"&seriesUID="+ serieId +"&objectUID=" + result[i].sop_iuid + "&frameNumber=1&rows=500\"></img><br></ br>");
+        }
+        */
+        response.end();
+    });
+}
+
+
 //
 //   Setting up the paths
 
@@ -122,6 +147,10 @@ app.get('/objects', (request, response) => {
 
 app.get('/allSeries', (request, response) => {
     searchAll(response);
+});
+
+app.get('/testeDicom', (request, response) => {
+    searchDicom(request.query.serieId, response);
 });
 
 //   Wado proxy to fix COORS issues
